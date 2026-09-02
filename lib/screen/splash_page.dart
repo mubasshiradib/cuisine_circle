@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'onboarding.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -94,7 +94,7 @@ class _ScreenState extends State<Splash> {
       if (mounted) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const Onboarding()),
         );
       }
     });
