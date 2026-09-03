@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screen/home_page.dart';
+import 'screen/splash_page.dart';
 
 void main() {
   runApp(const CuisineCircleApp());
@@ -20,7 +20,7 @@ class CuisineCircleApp extends StatelessWidget {
           surface: const Color(0xFFF8F5F2),
         ),
       ),
-      home: const HomePage(),
+      home: const Splash(),
     );
   }
 }
