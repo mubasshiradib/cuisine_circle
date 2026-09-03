@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'login_page.dart';
 class Onboarding extends StatefulWidget {
   const Onboarding({super.key});
   @override
@@ -11,7 +11,7 @@ class _OnboardingState extends State<Onboarding> {
   void openPage() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const HomePage()),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
   @override
@@ -29,7 +29,7 @@ class _OnboardingState extends State<Onboarding> {
                 children: [
                   Row(
                     children: [
-                      Image.asset('Assets/onboard_screen_image/onboard_logo.png', height: 34),
+                      Image.asset('Assets/onboard_screen_image/onboard_logo.png', height: 45),
                       const SizedBox(width: 8),
                       const Text(
                         'Cuisine Circle',
