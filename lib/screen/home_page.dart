@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'search_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -55,14 +56,23 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               width: 42,
               height: 42,
-              decoration: const BoxDecoration(   //search button
+              decoration: const BoxDecoration( 
                 color: iconContainerColor,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.search_rounded,
-                color: darkBrownColor,
-                size: 22,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                icon: const Icon(
+                  Icons.search_rounded,
+                  color: darkBrownColor,
+                  size: 22,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchPage()),
+                  );
+                },
               ),
             ),
           ),
