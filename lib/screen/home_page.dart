@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'search_page.dart';
+import 'profile_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -98,23 +99,31 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        child: const Row(
+        child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Icon(                 // Home Icon
+            const Icon(                 // Home Icon
               Icons.home_filled,
               color: darkBrownColor,
               size: 28,
             ),
-            Icon(                  // Add Icon
+            const Icon(                  // Add Icon
               Icons.add_circle,
               color: darkBrownColor,
               size: 40,
             ),
-            Icon(                  // Profile Icon
-              Icons.person_outline_rounded,
-              color: darkBrownColor,
-              size: 28,
+            IconButton(                  // Profile Icon
+              icon: const Icon(
+                Icons.person_outline_rounded,
+                color: darkBrownColor,
+                size: 28,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
             ),
           ],
         ),
