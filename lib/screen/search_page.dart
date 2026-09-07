@@ -10,7 +10,6 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   TextEditingController srch = TextEditingController();
   List<String> recipe = ['Chicken Biryani','Chicken Curry','Fried Rice','Pasta','Butter Chicken','Chicken Tikka','Vegetable Khichuri',];
-  List<String> likeRecipes = ['Chicken Biryani','Chicken Curry','Fried Rice','Pasta','Butter Chicken','Chicken Tikka','Vegetable Khichuri',];
   List<String> recent = [];
   List<String> result = [];
   bool found = false;
@@ -97,7 +96,7 @@ class _SearchPageState extends State<SearchPage> {
               SizedBox(height: 10),
               Column(crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  for (String i in likeRecipes)
+                  for (String i in recipe)
                     GestureDetector(
                       onTap: () {
                         setState(() {
