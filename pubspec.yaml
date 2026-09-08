@@ -64,6 +64,7 @@ flutter:
     - Assets/log_page_assets/
     - Assets/Sign_up_page_image/
     - Assets/verification_page_assets/
+    - Assets/hi.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
