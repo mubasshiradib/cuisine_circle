@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'search_page.dart';
 import 'profile_page.dart';
+import 'add_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -107,10 +108,18 @@ class _HomePageState extends State<HomePage> {
               color: darkBrownColor,
               size: 28,
             ),
-            const Icon(                  // Add Icon
-              Icons.add_circle,
-              color: darkBrownColor,
-              size: 40,
+            IconButton(                  // Add Icon
+              icon: const Icon(
+                Icons.add_circle,
+                color: darkBrownColor,
+                size: 40,
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const AddPage()),
+                );
+              },
             ),
             IconButton(                  // Profile Icon
               icon: const Icon(
