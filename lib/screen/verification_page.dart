@@ -45,8 +45,8 @@ class _VerificationPageState extends State<VerificationPage> {
         textAlign: TextAlign.center,maxLength: 1,
         style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF2D2013)),
         decoration: InputDecoration(counterText: '', border: InputBorder.none),
-        onChanged: (val) {
-          if (val.isNotEmpty) FocusScope.of(context).nextFocus();
+        onChanged: (v) {
+          if (v.isNotEmpty) FocusScope.of(context).nextFocus();
         },
       ),
     );
