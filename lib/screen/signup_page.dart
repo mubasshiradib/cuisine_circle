@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../auth_sevices.dart';
 import 'login_page.dart';
-import 'verification_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -10,6 +10,8 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final AuthSevices _authService = AuthSevices();
+
   TextEditingController N = TextEditingController();
   TextEditingController mail = TextEditingController();
   TextEditingController number = TextEditingController();
@@ -25,6 +27,7 @@ class _SignupPageState extends State<SignupPage> {
   bool showNum = true;
   bool showPass = false;
   bool showConPass = false;
+  bool isLoading = false;
 
   bool ckName(String t) {
     return t.isNotEmpty && t.length >= 6 && RegExp(r'^[A-Z]').hasMatch(t);
@@ -222,7 +225,7 @@ class _SignupPageState extends State<SignupPage> {
                   }
                 },
                 decoration: InputDecoration(
-                  hintText: 'Password',
+                  hintText: 'Password > 8 & includes char,num,sym',
                   prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
                   suffixIcon: IconButton(
                     icon: Icon(showPass ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
@@ -271,7 +274,7 @@ class _SignupPageState extends State<SignupPage> {
                   }
                 },
                 decoration: InputDecoration(
-                  hintText: 'Confirm password',
+                  hintText: 'Again the same password',
                   prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
                   suffixIcon: IconButton(
                     icon: Icon(showConPass ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
@@ -316,26 +319,51 @@ class _SignupPageState extends State<SignupPage> {
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    nameErr = !ckName(N.text);
-                    emailErr = !ckMail(mail.text);
-                    numErr = !ckNum(number.text);
-                    passErr = !ckPass(pass.text);
-                    conPassErr = !ckPass(rePass.text) || rePass.text != pass.text;
-                  });
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          nameErr = !ckName(N.text);
+                          emailErr = !ckMail(mail.text);
+                          numErr = !ckNum(number.text);
+                          passErr = !ckPass(pass.text);
+                          conPassErr = !ckPass(rePass.text) || rePass.text != pass.text;
+                        });
 
-                  if (!nameErr && !emailErr && !numErr && !passErr && !conPassErr) {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => VerificationPage()));
-                  }
-                },
+                        if (!nameErr && !emailErr && !numErr && !passErr && !conPassErr) {
+                          setState(() => isLoading = true);
+
+                          String? res = await _authService.signUp(name: N.text, email: mail.text, password: pass.text);
+
+                          if (!mounted) return;
+
+                          setState(() => isLoading = false);
+
+                          if (res == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Account created! Verification link sent to your email. Please login after verifying.')),
+                            );
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(res)),
+                            );
+                          }
+                        }
+                      },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xFF2D2013),
                   foregroundColor: Colors.white,
                   minimumSize: Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
-                child: Text('Join Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                child: isLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : Text('Join Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
               SizedBox(height: 6),
               Row(
