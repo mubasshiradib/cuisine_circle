@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1000568842269",
+    "project_id": "cuisine-circle",
+    "storage_bucket": "cuisine-circle.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1000568842269:android:7588b080287433a4d6bef4",
+        "android_client_info": {
+          "package_name": "com.example.cuisine_circle"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvKxLsuBlHowvWDgNnznJIyHaaqvvlvP8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
