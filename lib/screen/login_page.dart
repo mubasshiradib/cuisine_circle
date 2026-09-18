@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../auth_sevices.dart';
+import 'forgot_password_page.dart';
 import 'home_page.dart';
 import 'signup_page.dart';
-import 'verification_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,12 +12,15 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final AuthSevices _authService = AuthSevices();
+
   TextEditingController mail = TextEditingController();
   TextEditingController pass = TextEditingController();
 
   bool mailErr = false;
   bool passErr = false;
   bool showPass = false;
+  bool isLoading = false;
 
   bool ckMail(String t) {
     return t.isNotEmpty && t.contains('@') && t.contains('.');
@@ -146,22 +150,56 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-              SizedBox(height: 18),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    mailErr = !ckMail(mail.text);
-                    passErr = !ckPass(pass.text);
-                  });
-
-                  if (!mailErr && !passErr) {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => VerificationPage()));
-                  }
-                },style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF2D2013),
-                foregroundColor: Colors.white,minimumSize: Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                    );
+                  },
+                  child: Text('Forgot Password?', style: TextStyle(color: Color(0xFF2D2013), fontWeight: FontWeight.bold)),
                 ),
-                child: Text('Login Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          mailErr = !ckMail(mail.text);
+                          passErr = !ckPass(pass.text);
+                        });
+
+                        if (!mailErr && !passErr) {
+                          setState(() => isLoading = true);
+
+                          String? res = await _authService.signIn(email: mail.text, password: pass.text);
+
+                          if (!mounted) return;
+                          setState(() => isLoading = false);
+
+                          if (res == null) {
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), (r) => false);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res)));
+                          }
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF2D2013),
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                ),
+                child: isLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : Text('Login Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
               SizedBox(height: 6),
               TextButton(
