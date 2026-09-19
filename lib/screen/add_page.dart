@@ -56,11 +56,17 @@ class _AddPageState extends State<AddPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Recipe Title', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Recipe Title',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     SizedBox(height: 8),
                     TextField(),
                     SizedBox(height: 16),
-                    Text('Description', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Description',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     SizedBox(height: 8),
                     TextField(maxLines: 3),
                   ],
@@ -82,7 +88,10 @@ class _AddPageState extends State<AddPage> {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         IconButton(
-                          icon: const Icon(Icons.add_circle, color: Color(0xFF4A2518)),
+                          icon: const Icon(
+                            Icons.add_circle,
+                            color: Color(0xFF4A2518),
+                          ),
                           onPressed: () {
                             setState(() {
                               ingredientCount++;
@@ -97,17 +106,15 @@ class _AddPageState extends State<AddPage> {
                         padding: const EdgeInsets.only(bottom: 8.0),
                         child: Row(
                           children: [
-                            const Expanded(
-                              child: TextField(),
-                            ),
+                            const Expanded(child: TextField()),
                             const SizedBox(width: 8),
-                            const SizedBox(
-                              width: 80,
-                              child: TextField(),
-                            ),
+                            const SizedBox(width: 80, child: TextField()),
                             if (ingredientCount > 1)
                               IconButton(
-                                icon: const Icon(Icons.remove_circle, color: Colors.red),
+                                icon: const Icon(
+                                  Icons.remove_circle,
+                                  color: Colors.red,
+                                ),
                                 onPressed: () {
                                   setState(() {
                                     ingredientCount--;
@@ -129,7 +136,10 @@ class _AddPageState extends State<AddPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Cooking Steps', style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Cooking Steps',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                     SizedBox(height: 8),
                     TextField(maxLines: 4),
                   ],
@@ -141,7 +151,10 @@ class _AddPageState extends State<AddPage> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF4A2518),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 14,
+                ),
               ),
               onPressed: () {
                 showDialog(
@@ -164,7 +177,10 @@ class _AddPageState extends State<AddPage> {
                   ),
                 );
               },
-              child: const Text('Submit Recipe', style: TextStyle(fontSize: 16)),
+              child: const Text(
+                'Submit Recipe',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
             const SizedBox(height: 20),
           ],
