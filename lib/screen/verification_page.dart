@@ -12,22 +12,35 @@ class _VerificationPageState extends State<VerificationPage> {
   TextEditingController in3 = TextEditingController();
   TextEditingController in4 = TextEditingController();
   Timer? time;
-  int sec = 60;
-  @override
-  void initState() {
-    super.initState();
-    startTimer();
-  }
-  void startTimer() {
-    time?.cancel();
-    setState(() => sec = 60);
-    time = Timer.periodic(Duration(seconds: 1), (t) {
-      if (sec > 0) {
-        setState(() => sec--);} 
-        else {
-        time?.cancel();}
-    });
-  }
+int sec = 60;
+
+@override
+void initState() {
+  super.initState();
+  startTimer();
+}
+
+void startTimer() {
+  time?.cancel();
+  setState(() => sec = 60);
+
+  time = Timer.periodic(Duration(seconds: 1), (t) {
+    if (sec > 0) {
+      if (mounted) {
+        setState(() => sec--);
+      }
+    } else {
+      time?.cancel();
+    }
+  });
+}
+
+@override
+void dispose() {
+  time?.cancel();
+  super.dispose();
+}
+  
 
   void reset() {
     in1.clear();

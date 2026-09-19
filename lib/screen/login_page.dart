@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../auth_sevices.dart';
+import 'forgot_password_page.dart';
 import 'home_page.dart';
 import 'signup_page.dart';
-import 'verification_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -11,8 +12,27 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final AuthSevices _authService = AuthSevices();
+
   TextEditingController mail = TextEditingController();
   TextEditingController pass = TextEditingController();
+
+  bool mailErr = false;
+  bool passErr = false;
+  bool showPass = false;
+  bool isLoading = false;
+
+  bool ckMail(String t) {
+    return t.isNotEmpty && t.contains('@') && t.contains('.');
+  }
+
+  bool ckPass(String t) {
+    if (t.isEmpty && t.length < 8) return false;
+    bool l = t.contains(RegExp(r'[a-zA-Z]'));
+    bool n = t.contains(RegExp(r'[0-9]'));
+    bool sym = t.contains(RegExp(r'[^a-zA-Z0-9]'));
+    return l && n && sym;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,34 +64,142 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 15),
               TextField(
                 controller: mail,
-               decoration: InputDecoration(hintText: 'Email address',
-                prefixIcon: Icon(Icons.email, color: Color(0xFF2D2013)),filled: true,fillColor: Color(0xFFE8E3DC),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide(color: Color(0xFF2D2013), width: 2),),
-                ),
-              ),
-              SizedBox(height: 12),
-              TextField(
-                controller: pass,
-                obscureText: true,
-              decoration: InputDecoration(hintText: 'Password',prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
-                filled: true,fillColor: Color(0xFFE8E3DC),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: Color(0xFF2D2013), width: 2),
+                onChanged: (val) {
+                  if (mailErr) {
+                    setState(() {
+                      mailErr = !ckMail(val);
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Email address',
+                  prefixIcon: Icon(Icons.email, color: Color(0xFF2D2013)),
+                  filled: true,
+                  fillColor: Color(0xFFE8E3DC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: mailErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: mailErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: mailErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
                   ),
                 ),
               ),
-              SizedBox(height: 18),
-              ElevatedButton(
-                onPressed: () {
-                  if (mail.text.isNotEmpty && pass.text.isNotEmpty) {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => VerificationPage()));
-                  }
-              },style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF2D2013),
-                foregroundColor: Colors.white,minimumSize: Size(double.infinity, 50),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),),
+              if (mailErr)
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Email is invalid',
+                      style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-                child: Text('Login Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              SizedBox(height: 12),
+              TextField(
+                controller: pass,
+                obscureText: !showPass,
+                onChanged: (val) {
+                  if (passErr) {
+                    setState(() {
+                      passErr = !ckPass(val);
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Password > 8 & includes char,num,sym',
+                  prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
+                  suffixIcon: IconButton(
+                    icon: Icon(showPass ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
+                    onPressed: () {
+                      setState(() {
+                        showPass = !showPass;
+                      });
+                    },
+                  ),
+                  filled: true,
+                  fillColor: Color(0xFFE8E3DC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: passErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: passErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: passErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                  ),
+                ),
+              ),
+              if (passErr)
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Password is invalid',
+                      style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ForgotPasswordPage()),
+                    );
+                  },
+                  child: Text('Forgot Password?', style: TextStyle(color: Color(0xFF2D2013), fontWeight: FontWeight.bold)),
+                ),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          mailErr = !ckMail(mail.text);
+                          passErr = !ckPass(pass.text);
+                        });
+
+                        if (!mailErr && !passErr) {
+                          setState(() => isLoading = true);
+
+                          String? res = await _authService.signIn(email: mail.text, password: pass.text);
+
+                          if (!mounted) return;
+                          setState(() => isLoading = false);
+
+                          if (res == null) {
+                            Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), (r) => false);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(res)));
+                          }
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF2D2013),
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                ),
+                child: isLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : Text('Login Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
               SizedBox(height: 6),
               TextButton(

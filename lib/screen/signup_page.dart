@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import '../auth_sevices.dart';
 import 'login_page.dart';
-import 'verification_page.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -10,11 +10,44 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final AuthSevices _authService = AuthSevices();
+
   TextEditingController N = TextEditingController();
   TextEditingController mail = TextEditingController();
   TextEditingController number = TextEditingController();
   TextEditingController pass = TextEditingController();
   TextEditingController rePass = TextEditingController();
+
+  bool nameErr = false;
+  bool emailErr = false;
+  bool numErr = false;
+  bool passErr = false;
+  bool conPassErr = false;
+
+  bool showNum = true;
+  bool showPass = false;
+  bool showConPass = false;
+  bool isLoading = false;
+
+  bool ckName(String t) {
+    return t.isNotEmpty && t.length >= 6 && RegExp(r'^[A-Z]').hasMatch(t);
+  }
+
+  bool ckMail(String t) {
+    return t.isNotEmpty && t.contains('@') && t.contains('.');
+  }
+
+  bool ckNum(String t) {
+    return t.length == 11 && t.startsWith('01') && RegExp(r'^[0-9]+$').hasMatch(t);
+  }
+
+  bool ckPass(String t) {
+    if (t.length < 8) return false;
+    bool l = t.contains(RegExp(r'[a-zA-Z]'));
+    bool n = t.contains(RegExp(r'[0-9]'));
+    bool sym = t.contains(RegExp(r'[^a-zA-Z0-9]'));
+    return l && n && sym;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +58,14 @@ class _SignupPageState extends State<SignupPage> {
           padding: EdgeInsets.only(top: 55.0, left: 20.0, right: 20.0, bottom: 15.0),
           child: Column(
             children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [Column(crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [Text('Create an account',
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Create an account',
                         style: TextStyle(fontSize: 27, fontWeight: FontWeight.bold, color: Color(0xFF2D2013)),
                       ),
                       SizedBox(height: 5),
@@ -43,67 +81,298 @@ class _SignupPageState extends State<SignupPage> {
               SizedBox(height: 5),
               TextField(
                 controller: N,
-                decoration: InputDecoration(hintText: 'Name',
-                  prefixIcon: Icon(Icons.person, color: Color(0xFF2D2013)), filled: true, fillColor: Color(0xFFE8E3DC),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Color(0xFF2D2013), width: 2)),
+                onChanged: (val) {
+                  if (nameErr) {
+                    setState(() {
+                      nameErr = !ckName(val);
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Name',
+                  prefixIcon: Icon(Icons.person, color: Color(0xFF2D2013)),
+                  filled: true,
+                  fillColor: Color(0xFFE8E3DC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: nameErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: nameErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: nameErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                  ),
                 ),
               ),
+              if (nameErr)
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Name is invalid',
+                      style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               SizedBox(height: 8),
               TextField(
                 controller: mail,
-                decoration: InputDecoration(hintText: 'Email address',
-                  prefixIcon: Icon(Icons.email, color: Color(0xFF2D2013)), filled: true, fillColor: Color(0xFFE8E3DC),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Color(0xFF2D2013), width: 2)),
+                onChanged: (val) {
+                  if (emailErr) {
+                    setState(() {
+                      emailErr = !ckMail(val);
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Email address',
+                  prefixIcon: Icon(Icons.email, color: Color(0xFF2D2013)),
+                  filled: true,
+                  fillColor: Color(0xFFE8E3DC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: emailErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: emailErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: emailErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                  ),
                 ),
               ),
+              if (emailErr)
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Email is invalid',
+                      style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               SizedBox(height: 8),
               TextField(
                 controller: number,
                 keyboardType: TextInputType.phone,
-                decoration: InputDecoration(hintText: 'Mobile number',
-                  prefixIcon: Icon(Icons.phone, color: Color(0xFF2D2013)), filled: true, fillColor: Color(0xFFE8E3DC),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Color(0xFF2D2013), width: 2)),
+                obscureText: !showNum,
+                onChanged: (val) {
+                  if (numErr) {
+                    setState(() {
+                      numErr = !ckNum(val);
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Mobile number',
+                  prefixIcon: Icon(Icons.phone, color: Color(0xFF2D2013)),
+                  suffixIcon: IconButton(
+                    icon: Icon(showNum ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
+                    onPressed: () {
+                      setState(() {
+                        showNum = !showNum;
+                      });
+                    },
+                  ),
+                  filled: true,
+                  fillColor: Color(0xFFE8E3DC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: numErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: numErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: numErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                  ),
                 ),
               ),
+              if (numErr)
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Mobile number is invalid',
+                      style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               SizedBox(height: 8),
               TextField(
                 controller: pass,
-                obscureText: true,
-                decoration: InputDecoration(hintText: 'Password',
-                  prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)), filled: true, fillColor: Color(0xFFE8E3DC),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Color(0xFF2D2013), width: 2)),
+                obscureText: !showPass,
+                onChanged: (val) {
+                  if (passErr) {
+                    setState(() {
+                      passErr = !ckPass(val);
+                    });
+                  }
+                  if (conPassErr) {
+                    setState(() {
+                      conPassErr = !ckPass(rePass.text) || rePass.text != val;
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Password > 8 & includes char,num,sym',
+                  prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
+                  suffixIcon: IconButton(
+                    icon: Icon(showPass ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
+                    onPressed: () {
+                      setState(() {
+                        showPass = !showPass;
+                      });
+                    },
+                  ),
+                  filled: true,
+                  fillColor: Color(0xFFE8E3DC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: passErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: passErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: passErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                  ),
                 ),
               ),
+              if (passErr)
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Password is invalid',
+                      style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               SizedBox(height: 8),
               TextField(
                 controller: rePass,
-                obscureText: true,
-                decoration: InputDecoration(hintText: 'Confirm password',
-                  prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)), filled: true, fillColor: Color(0xFFE8E3DC),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Color(0xFF2D2013), width: 2)),
+                obscureText: !showConPass,
+                onChanged: (val) {
+                  if (conPassErr) {
+                    setState(() {
+                      conPassErr = !ckPass(val) || val != pass.text;
+                    });
+                  }
+                },
+                decoration: InputDecoration(
+                  hintText: 'Again the same password',
+                  prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
+                  suffixIcon: IconButton(
+                    icon: Icon(showConPass ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
+                    onPressed: () {
+                      setState(() {
+                        showConPass = !showConPass;
+                      });
+                    },
+                  ),
+                  filled: true,
+                  fillColor: Color(0xFFE8E3DC),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: conPassErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: conPassErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                    borderSide: BorderSide(color: conPassErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                  ),
                 ),
               ),
+              if (conPassErr)
+                Padding(
+                  padding: EdgeInsets.only(top: 4, left: 12),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Passwords do not match',
+                      style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
               SizedBox(height: 10),
-              Text('By signing up, you agree to our Terms of use and privacy notice', textAlign: TextAlign.center,
+              Text(
+                'By signing up, you agree to our Terms of use and privacy notice',
+                textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: Colors.grey),
               ),
               SizedBox(height: 10),
               ElevatedButton(
-                onPressed: () {
-                  if (N.text.isNotEmpty && mail.text.isNotEmpty && number.text.isNotEmpty && pass.text.isNotEmpty && rePass.text.isNotEmpty) {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => VerificationPage()));
-                  }
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Color(0xFF2D2013), foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),),
-                child: Text('Join Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        setState(() {
+                          nameErr = !ckName(N.text);
+                          emailErr = !ckMail(mail.text);
+                          numErr = !ckNum(number.text);
+                          passErr = !ckPass(pass.text);
+                          conPassErr = !ckPass(rePass.text) || rePass.text != pass.text;
+                        });
+
+                        if (!nameErr && !emailErr && !numErr && !passErr && !conPassErr) {
+                          setState(() => isLoading = true);
+
+                          String? res = await _authService.signUp(name: N.text, email: mail.text, password: pass.text);
+
+                          if (!mounted) return;
+
+                          setState(() => isLoading = false);
+
+                          if (res == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Account created! Verification link sent to your email. Please login after verifying.')),
+                            );
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(res)),
+                            );
+                          }
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF2D2013),
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 48),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                ),
+                child: isLoading
+                    ? SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      )
+                    : Text('Join Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
               SizedBox(height: 6),
-              Row(mainAxisAlignment: MainAxisAlignment.center,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('Already have an account? ', style: TextStyle(color: Colors.grey, fontSize: 15)),
                   TextButton(
-                    onPressed: () {Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    onPressed: () {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
                     },
                     child: Text('Sign In', style: TextStyle(color: Color(0xFF2D2013), fontWeight: FontWeight.bold, fontSize: 15)),
                   ),
