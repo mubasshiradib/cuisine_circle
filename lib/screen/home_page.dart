@@ -102,13 +102,13 @@ class _HomePageState extends State<HomePage> {
 
           GestureDetector(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      RecipePage(title: 'Recipe 1', isLiked: isLiked),
-                ),
-              );
+              //Navigator.push(
+              //  context,
+              //  MaterialPageRoute(
+              //   builder: (context) =>
+              //        RecipePage(title: 'Recipe 1', isLiked: isLiked),
+              //  ),
+              //);
             },
             child: Container(
               decoration: BoxDecoration(
@@ -203,7 +203,8 @@ class _HomePageState extends State<HomePage> {
               color: darkBrownColor,
               size: 28,
             ),
-            IconButton(                  // Add Icon
+            IconButton(
+              // Add Icon
               icon: const Icon(
                 Icons.add_circle,
                 color: darkBrownColor,
