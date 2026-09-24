@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/recipe_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key});
@@ -11,6 +10,7 @@ class AddPage extends StatefulWidget {
 }
 
 class _AddPageState extends State<AddPage> {
+  final TextEditingController _imageUrlController = TextEditingController();
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _procedureController = TextEditingController();
@@ -22,12 +22,19 @@ class _AddPageState extends State<AddPage> {
     TextEditingController(),
   ];
 
-  XFile? _selectedImage;
-
   bool _isLoading = false;
 
   @override
+  void initState() {
+    super.initState();
+    _imageUrlController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
   void dispose() {
+    _imageUrlController.dispose();
     _titleController.dispose();
     _descriptionController.dispose();
     _procedureController.dispose();
@@ -38,17 +45,6 @@ class _AddPageState extends State<AddPage> {
       c.dispose();
     }
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = pickedFile;
-      });
-    }
   }
 
   void _addIngredientRow() {
@@ -70,7 +66,6 @@ class _AddPageState extends State<AddPage> {
   }
 
   Future<void> _submitRecipe() async {
-    // Validation: Title cannot be empty
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a recipe title')),
@@ -92,17 +87,46 @@ class _AddPageState extends State<AddPage> {
         }
       }
 
-      final docRef = FirebaseFirestore.instance.collection('recipes').doc();
-      final recipe = Recipe(
-        id: docRef.id,
-        title: _titleController.text.trim(),
-        description: _descriptionController.text.trim(),
-        imageUrl: '',
-        ingredients: ingredients,
-        procedure: _procedureController.text.trim(),
-      );
+      final user = FirebaseAuth.instance.currentUser;
+      String author = 'Chef';
 
-      await docRef.set(recipe.toMap());
+      if (user != null) {
+        if (user.displayName != null && user.displayName!.trim().isNotEmpty) {
+          author = user.displayName!.trim();
+        } else if (user.email != null) {
+          author = user.email!.split('@')[0];
+        }
+
+        try {
+          final userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+          if (userDoc.exists && userDoc.data() != null) {
+            final dbName = (userDoc.data()!['name'] ??
+                userDoc.data()!['displayName'] ??
+                '')
+                .toString()
+                .trim();
+            if (dbName.isNotEmpty) author = dbName;
+          }
+        } catch (_) {}
+      }
+
+      final docRef = FirebaseFirestore.instance.collection('recipes').doc();
+      await docRef.set({
+        'id': docRef.id,
+        'title': _titleController.text.trim(),
+        'description': _descriptionController.text.trim(),
+        'imageUrl': _imageUrlController.text.trim(),
+        'ingredients': ingredients,
+        'procedure': _procedureController.text.trim(),
+        'userId': user?.uid ?? '',
+        'authorName': author,
+        'likes': 0,
+        'status': 'Approved',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -112,9 +136,9 @@ class _AddPageState extends State<AddPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error saving recipe: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error saving recipe: $e')),
+        );
       }
     } finally {
       if (mounted) {
@@ -127,6 +151,8 @@ class _AddPageState extends State<AddPage> {
 
   @override
   Widget build(BuildContext context) {
+    final hasImage = _imageUrlController.text.trim().isNotEmpty;
+
     return Scaffold(
       backgroundColor: const Color(0xFFFAF4F2),
       appBar: AppBar(
@@ -151,40 +177,44 @@ class _AddPageState extends State<AddPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            GestureDetector(
-              onTap: _pickImage,
-              child: Card(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
+            Card(
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: SizedBox(
+                height: 150,
+                width: double.infinity,
+                child: hasImage
+                    ? ClipRRect(
                   borderRadius: BorderRadius.circular(16),
-                ),
-                child: SizedBox(
-                  height: 150,
-                  width: double.infinity,
-                  child: _selectedImage != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.network(
-                            _selectedImage!.path,
-                            fit: BoxFit.cover,
-                            width: double.infinity,
-                          ),
-                        )
-                      : const Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.camera_alt,
-                              color: Color(0xFF4A2518),
-                              size: 45,
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Tap to select recipe photo',
-                              style: TextStyle(color: Color(0xFF4A2518)),
-                            ),
-                          ],
-                        ),
+                  child: Image.network(
+                    _imageUrlController.text.trim(),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    errorBuilder: (context, error, stackTrace) =>
+                    const Center(
+                      child: Text(
+                        'Invalid Image URL',
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                  ),
+                )
+                    : const Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.camera_alt,
+                      color: Color(0xFF4A2518),
+                      size: 45,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Recipe photo preview',
+                      style: TextStyle(color: Color(0xFF4A2518)),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -201,15 +231,23 @@ class _AddPageState extends State<AddPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
+                      'Recipe Image URL',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      controller: _imageUrlController,
+                      decoration: const InputDecoration(),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
                       'Recipe Title',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _titleController,
-                      decoration: const InputDecoration(
-                        hintText: 'e.g. Chicken Biryani',
-                      ),
+                      decoration: const InputDecoration(),
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -220,9 +258,7 @@ class _AddPageState extends State<AddPage> {
                     TextField(
                       controller: _descriptionController,
                       maxLines: 3,
-                      decoration: const InputDecoration(
-                        hintText: 'A short description of this dish...',
-                      ),
+                      decoration: const InputDecoration(),
                     ),
                   ],
                 ),
@@ -264,9 +300,7 @@ class _AddPageState extends State<AddPage> {
                             Expanded(
                               child: TextField(
                                 controller: _ingredientControllers[i],
-                                decoration: const InputDecoration(
-                                  hintText: 'Ingredient (e.g. Flour)',
-                                ),
+                                decoration: const InputDecoration(),
                               ),
                             ),
                             const SizedBox(width: 8),
@@ -274,9 +308,7 @@ class _AddPageState extends State<AddPage> {
                               width: 90,
                               child: TextField(
                                 controller: _quantityControllers[i],
-                                decoration: const InputDecoration(
-                                  hintText: 'Qty (e.g. 2 cups)',
-                                ),
+                                decoration: const InputDecoration(),
                               ),
                             ),
                             if (_ingredientControllers.length > 1)
@@ -314,10 +346,7 @@ class _AddPageState extends State<AddPage> {
                     TextField(
                       controller: _procedureController,
                       maxLines: 4,
-                      decoration: const InputDecoration(
-                        hintText:
-                            '1. Chop onions...\n2. Cook chicken on medium heat...',
-                      ),
+                      decoration: const InputDecoration(),
                     ),
                   ],
                 ),
@@ -337,14 +366,15 @@ class _AddPageState extends State<AddPage> {
               onPressed: _isLoading ? null : _submitRecipe,
               child: _isLoading
                   ? const SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2.5,
-                      ),
-                    )
-                  : const Text('Submit Recipe', style: TextStyle(fontSize: 16)),
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2.5,
+                ),
+              )
+                  : const Text('Submit Recipe',
+                  style: TextStyle(fontSize: 16)),
             ),
             const SizedBox(height: 20),
           ],

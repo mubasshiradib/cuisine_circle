@@ -3,36 +3,42 @@ class Recipe {
   final String title;
   final String description;
   final String imageUrl;
-  final List<String> ingredients;
-  final String procedure;
+  final String userId;
+  final String authorName;
+  final int likes;
 
   Recipe({
     required this.id,
     required this.title,
     required this.description,
     required this.imageUrl,
-    required this.ingredients,
-    required this.procedure,
+    required this.userId,
+    this.authorName = 'Chef',
+    this.likes = 0,
   });
+
+  factory Recipe.fromMap(Map<String, dynamic> data, String documentId) {
+    return Recipe(
+      id: documentId,
+      title: data['title'] ?? '',
+      description: data['description'] ?? '',
+      imageUrl: data['imageUrl'] ?? '',
+      userId: data['userId'] ?? '',
+      authorName: (data['authorName'] != null && data['authorName'].toString().trim().isNotEmpty)
+          ? data['authorName']
+          : 'Chef',
+      likes: (data['likes'] as num?)?.toInt() ?? 0,
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
       'title': title,
       'description': description,
       'imageUrl': imageUrl,
-      'ingredients': ingredients,
-      'procedure': procedure,
+      'userId': userId,
+      'authorName': authorName,
+      'likes': likes,
     };
-  }
-
-  factory Recipe.fromMap(Map<String, dynamic> map, String docId) {
-    return Recipe(
-      id: docId,
-      title: map['title'] ?? '',
-      description: map['description'] ?? '',
-      imageUrl: map['imageUrl'] ?? '',
-      ingredients: List<String>.from(map['ingredients'] ?? []),
-      procedure: map['procedure'] ?? '',
-    );
   }
 }
