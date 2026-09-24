@@ -10,22 +10,42 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // 1. Gets the logged-in user from Firebase Authentication
   User? currentUser = FirebaseAuth.instance.currentUser;
 
   late String name;
+  String phoneNumber = "";
   String bio = "Food enthusiast and home cook.";
 
   @override
   void initState() {
     super.initState();
-    // Safely reads display name, email prefix, or fallback
     if (currentUser?.displayName != null && currentUser!.displayName!.trim().isNotEmpty) {
       name = currentUser!.displayName!;
     } else if (currentUser?.email != null && currentUser!.email!.isNotEmpty) {
       name = currentUser!.email!.split('@')[0];
     } else {
       name = "My Profile";
+    }
+
+    _fetchUserData();
+  }
+
+  Future<void> _fetchUserData() async {
+    if (currentUser != null) {
+      try {
+        final doc = await FirebaseFirestore.instance.collection('users').doc(currentUser!.uid).get();
+        if (doc.exists && mounted) {
+          final data = doc.data();
+          setState(() {
+            if (data?['name'] != null && data!['name'].toString().isNotEmpty) {
+              name = data['name'];
+            }
+            if (data?['phoneNumber'] != null) {
+              phoneNumber = data!['phoneNumber'];
+            }
+          });
+        }
+      } catch (_) {}
     }
   }
 
@@ -45,13 +65,19 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ),
       ),
-      // StreamBuilder listens to Firestore without blocking the whole screen
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance.collection('recipes').snapshots(),
+        stream: FirebaseFirestore.instance
+            .collection('recipes')
+            .where('userId', isEqualTo: currentUser?.uid ?? '')
+            .snapshots(),
         builder: (context, snapshot) {
           final bool isLoading = snapshot.connectionState == ConnectionState.waiting;
           final recipes = snapshot.data?.docs ?? [];
-          final int approvedCount = recipes.where((doc) => doc['status'] == 'Approved').length;
+
+          final int approvedCount = recipes.where((doc) {
+            final data = doc.data() as Map<String, dynamic>?;
+            return data != null && data['status'] == 'Approved';
+          }).length;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -59,14 +85,12 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 const SizedBox(height: 10),
 
-                // 1. User Photo (Always visible immediately)
                 const CircleAvatar(
                   radius: 45,
                   backgroundImage: AssetImage('Assets/hi.jpeg'),
                 ),
                 const SizedBox(height: 12),
 
-                // 2. Registered User Name (Always visible immediately)
                 Text(
                   name,
                   style: const TextStyle(
@@ -75,16 +99,30 @@ class _ProfilePageState extends State<ProfilePage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
 
-                // 3. Bio (Always visible immediately)
+                if (phoneNumber.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.phone, size: 16, color: Colors.grey),
+                        const SizedBox(width: 6),
+                        Text(
+                          phoneNumber,
+                          style: const TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.w600),
+                        ),
+                      ],
+                    ),
+                  ),
+
                 Text(
                   bio,
                   style: const TextStyle(fontSize: 15, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
 
-                // Stats Row
                 Card(
                   color: Colors.white,
                   child: Padding(
@@ -122,7 +160,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 20),
 
-                // 4. Edit Profile Button
                 ElevatedButton(
                   onPressed: () async {
                     final result = await Navigator.push(
@@ -150,7 +187,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 24),
 
-                // 5. Section Header
                 const Row(
                   children: [
                     Text(
@@ -165,7 +201,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 const SizedBox(height: 10),
 
-                // Case 1: Firebase Error (Shows error message clearly in red)
                 if (snapshot.hasError)
                   Padding(
                     padding: const EdgeInsets.all(12.0),
@@ -175,15 +210,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       textAlign: TextAlign.center,
                     ),
                   )
-
-                // Case 2: Still Loading Recipes from Cloud
                 else if (isLoading)
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24.0),
                     child: CircularProgressIndicator(color: Color(0xFF4A2518)),
                   )
-
-                // Case 3: Connected, but no recipes created yet
                 else if (recipes.isEmpty)
                     const Padding(
                       padding: EdgeInsets.symmetric(vertical: 20.0),
@@ -192,23 +223,37 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(color: Colors.grey),
                       ),
                     )
-
-                  // Case 4: Real Cloud Data Loaded Successfully
                   else
-                    for (var doc in recipes)
-                      Card(
-                        color: Colors.white,
-                        child: ListTile(
-                          title: Text(doc['title'] ?? ''),
-                          trailing: Text(
-                            doc['status'] ?? 'Pending',
-                            style: TextStyle(
-                              color: doc['status'] == 'Approved' ? Colors.green : Colors.orange,
-                              fontWeight: FontWeight.bold,
+                    for (var doc in recipes) ...[
+                      Builder(
+                        builder: (context) {
+                          final data = doc.data() as Map<String, dynamic>? ?? {};
+                          final title = (data['title'] as String?)?.isNotEmpty == true
+                              ? data['title'] as String
+                              : 'Untitled Recipe';
+                          final status = data['status'] as String? ?? 'Pending';
+                          final isApproved = status == 'Approved';
+
+                          return Card(
+                            color: Colors.white,
+                            margin: const EdgeInsets.only(bottom: 8.0),
+                            child: ListTile(
+                              title: Text(
+                                title,
+                                style: const TextStyle(fontWeight: FontWeight.w600),
+                              ),
+                              trailing: Text(
+                                status,
+                                style: TextStyle(
+                                  color: isApproved ? Colors.green : Colors.orange,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
+                    ],
               ],
             ),
           );

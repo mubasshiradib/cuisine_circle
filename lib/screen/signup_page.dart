@@ -52,16 +52,16 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF8F5F2),
+      backgroundColor: const Color(0xFFF8F5F2),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.only(top: 55.0, left: 20.0, right: 20.0, bottom: 15.0),
+          padding: const EdgeInsets.only(top: 55.0, left: 20.0, right: 20.0, bottom: 15.0),
           child: Column(
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
+                  const Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
@@ -76,9 +76,9 @@ class _SignupPageState extends State<SignupPage> {
                   Image.asset('Assets/Sign_up_page_image/sign_up_logo.png', height: 50),
                 ],
               ),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               Image.asset('Assets/Sign_up_page_image/sign_up_ui.png', height: 190, fit: BoxFit.contain),
-              SizedBox(height: 5),
+              const SizedBox(height: 5),
               TextField(
                 controller: N,
                 onChanged: (val) {
@@ -90,25 +90,25 @@ class _SignupPageState extends State<SignupPage> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Name',
-                  prefixIcon: Icon(Icons.person, color: Color(0xFF2D2013)),
+                  prefixIcon: const Icon(Icons.person, color: Color(0xFF2D2013)),
                   filled: true,
-                  fillColor: Color(0xFFE8E3DC),
+                  fillColor: const Color(0xFFE8E3DC),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: nameErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: nameErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: nameErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: nameErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: nameErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: nameErr ? Colors.lightGreen : const Color(0xFF2D2013), width: 2),
                   ),
                 ),
               ),
               if (nameErr)
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(top: 4, left: 12),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -118,7 +118,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                 ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               TextField(
                 controller: mail,
                 onChanged: (val) {
@@ -130,25 +130,25 @@ class _SignupPageState extends State<SignupPage> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Email address',
-                  prefixIcon: Icon(Icons.email, color: Color(0xFF2D2013)),
+                  prefixIcon: const Icon(Icons.email, color: Color(0xFF2D2013)),
                   filled: true,
-                  fillColor: Color(0xFFE8E3DC),
+                  fillColor: const Color(0xFFE8E3DC),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: emailErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: emailErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: emailErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: emailErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: emailErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: emailErr ? Colors.lightGreen : const Color(0xFF2D2013), width: 2),
                   ),
                 ),
               ),
               if (emailErr)
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(top: 4, left: 12),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -158,7 +158,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                 ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               TextField(
                 controller: number,
                 keyboardType: TextInputType.phone,
@@ -172,9 +172,9 @@ class _SignupPageState extends State<SignupPage> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Mobile number',
-                  prefixIcon: Icon(Icons.phone, color: Color(0xFF2D2013)),
+                  prefixIcon: const Icon(Icons.phone, color: Color(0xFF2D2013)),
                   suffixIcon: IconButton(
-                    icon: Icon(showNum ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
+                    icon: Icon(showNum ? Icons.visibility : Icons.visibility_off, color: const Color(0xFF2D2013)),
                     onPressed: () {
                       setState(() {
                         showNum = !showNum;
@@ -182,23 +182,23 @@ class _SignupPageState extends State<SignupPage> {
                     },
                   ),
                   filled: true,
-                  fillColor: Color(0xFFE8E3DC),
+                  fillColor: const Color(0xFFE8E3DC),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: numErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: numErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: numErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: numErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: numErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: numErr ? Colors.lightGreen : const Color(0xFF2D2013), width: 2),
                   ),
                 ),
               ),
               if (numErr)
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(top: 4, left: 12),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -208,7 +208,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                 ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               TextField(
                 controller: pass,
                 obscureText: !showPass,
@@ -226,9 +226,9 @@ class _SignupPageState extends State<SignupPage> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Password > 8 & includes char,num,sym',
-                  prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
+                  prefixIcon: const Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
                   suffixIcon: IconButton(
-                    icon: Icon(showPass ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
+                    icon: Icon(showPass ? Icons.visibility : Icons.visibility_off, color: const Color(0xFF2D2013)),
                     onPressed: () {
                       setState(() {
                         showPass = !showPass;
@@ -236,23 +236,23 @@ class _SignupPageState extends State<SignupPage> {
                     },
                   ),
                   filled: true,
-                  fillColor: Color(0xFFE8E3DC),
+                  fillColor: const Color(0xFFE8E3DC),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: passErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: passErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: passErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: passErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: passErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: passErr ? Colors.lightGreen : const Color(0xFF2D2013), width: 2),
                   ),
                 ),
               ),
               if (passErr)
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(top: 4, left: 12),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -262,7 +262,7 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                 ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               TextField(
                 controller: rePass,
                 obscureText: !showConPass,
@@ -275,9 +275,9 @@ class _SignupPageState extends State<SignupPage> {
                 },
                 decoration: InputDecoration(
                   hintText: 'Again the same password',
-                  prefixIcon: Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
+                  prefixIcon: const Icon(Icons.lock_clock, color: Color(0xFF2D2013)),
                   suffixIcon: IconButton(
-                    icon: Icon(showConPass ? Icons.visibility : Icons.visibility_off, color: Color(0xFF2D2013)),
+                    icon: Icon(showConPass ? Icons.visibility : Icons.visibility_off, color: const Color(0xFF2D2013)),
                     onPressed: () {
                       setState(() {
                         showConPass = !showConPass;
@@ -285,23 +285,23 @@ class _SignupPageState extends State<SignupPage> {
                     },
                   ),
                   filled: true,
-                  fillColor: Color(0xFFE8E3DC),
+                  fillColor: const Color(0xFFE8E3DC),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: conPassErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: conPassErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: conPassErr ? Colors.red : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: conPassErr ? Colors.red : const Color(0xFF2D2013), width: 2),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: BorderSide(color: conPassErr ? Colors.lightGreen : Color(0xFF2D2013), width: 2),
+                    borderSide: BorderSide(color: conPassErr ? Colors.lightGreen : const Color(0xFF2D2013), width: 2),
                   ),
                 ),
               ),
               if (conPassErr)
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(top: 4, left: 12),
                   child: Align(
                     alignment: Alignment.centerLeft,
@@ -311,70 +311,76 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                   ),
                 ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'By signing up, you agree to our Terms of use and privacy notice',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 13, color: Colors.grey),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: isLoading
                     ? null
                     : () async {
-                        setState(() {
-                          nameErr = !ckName(N.text);
-                          emailErr = !ckMail(mail.text);
-                          numErr = !ckNum(number.text);
-                          passErr = !ckPass(pass.text);
-                          conPassErr = !ckPass(rePass.text) || rePass.text != pass.text;
-                        });
+                  setState(() {
+                    nameErr = !ckName(N.text);
+                    emailErr = !ckMail(mail.text);
+                    numErr = !ckNum(number.text);
+                    passErr = !ckPass(pass.text);
+                    conPassErr = !ckPass(rePass.text) || rePass.text != pass.text;
+                  });
 
-                        if (!nameErr && !emailErr && !numErr && !passErr && !conPassErr) {
-                          setState(() => isLoading = true);
+                  if (!nameErr && !emailErr && !numErr && !passErr && !conPassErr) {
+                    setState(() => isLoading = true);
 
-                          String? res = await _authService.signUp(name: N.text, email: mail.text, password: pass.text);
+                    // Mobile number-shoh call kora hocche
+                    String? res = await _authService.signUp(
+                      name: N.text.trim(),
+                      email: mail.text.trim(),
+                      password: pass.text.trim(),
+                      phoneNumber: number.text.trim(),
+                    );
 
-                          if (!mounted) return;
+                    if (!mounted) return;
 
-                          setState(() => isLoading = false);
+                    setState(() => isLoading = false);
 
-                          if (res == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Account created! Verification link sent to your email. Please login after verifying.')),
-                            );
-                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(res)),
-                            );
-                          }
-                        }
-                      },
+                    if (res == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Account created! Verification link sent to your email. Please login after verifying.')),
+                      );
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(res)),
+                      );
+                    }
+                  }
+                },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF2D2013),
+                  backgroundColor: const Color(0xFF2D2013),
                   foregroundColor: Colors.white,
-                  minimumSize: Size(double.infinity, 48),
+                  minimumSize: const Size(double.infinity, 48),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
                 child: isLoading
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                      )
-                    : Text('Join Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                )
+                    : const Text('Join Now', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
-              SizedBox(height: 6),
+              const SizedBox(height: 6),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('Already have an account? ', style: TextStyle(color: Colors.grey, fontSize: 15)),
+                  const Text('Already have an account? ', style: TextStyle(color: Colors.grey, fontSize: 15)),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                     },
-                    child: Text('Sign In', style: TextStyle(color: Color(0xFF2D2013), fontWeight: FontWeight.bold, fontSize: 15)),
+                    child: const Text('Sign In', style: TextStyle(color: Color(0xFF2D2013), fontWeight: FontWeight.bold, fontSize: 15)),
                   ),
                 ],
               ),
